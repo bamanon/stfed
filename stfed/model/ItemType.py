@@ -1,0 +1,29 @@
+import enum
+
+class ItemType(enum.Enum):
+    #NO_ITEM = 0
+    BERSERKER_BREW = 1
+    BOAR_BURGER = 2
+    BOG_BOOTS = 3
+    DAEMONS_BANE = 4
+    DOWRY_CHEST = 5
+    DRIFT_DISC = 6
+    FROST_CAPE = 7
+    HEALING_SALVE = 8
+    KEY = 9
+    MAP = 10
+    MIGHT_MANTLE = 11
+    SACRED_URN = 12
+    COMPONENT = 13
+    SHRUB_SPRITE = 14
+    STORM_BRACERS = 15
+    TELEPORT_TOME = 16
+    TRAILFINDER = 17
+    VERDANT_SHIELD = 18
+    VIRTUE_VEIL = 19
+    WEIRD_WAND = 20
+    MASON_MIX = 21
+    MANA_ORB = 22
+    HARPY_NET = 23
+    WEIRD_WARD =  24
+    #ENDOFITEMTYPES = 25
