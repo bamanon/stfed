@@ -247,6 +247,26 @@
     <string>&amp;Preferences</string>
    </property>
   </action>
+  <action name="action_tools_localization_mass_import">
+   <property name="text">
+    <string>&amp;Import...</string>
+   </property>
+  </action>
+  <action name="action_tools_localization_export_english">
+   <property name="text">
+    <string>&amp;English</string>
+   </property>
+  </action>
+  <action name="action_tools_localization_export_german">
+   <property name="text">
+    <string>&amp;German</string>
+   </property>
+  </action>
+  <action name="action_tools_localization_export_french">
+   <property name="text">
+    <string>&amp;French</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

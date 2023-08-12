@@ -8,7 +8,7 @@ Beware, this program in a very early stage of development, more of a proof of co
 
 ## How to run
 
-stfed requires make, python 3 and QT6 to run.
+stfed requires make, python 3.8 and QT6 to run.
 
 When you have cloned the repo for the first time set up virtualenv and install pip dependencies with:
 
@@ -54,7 +54,24 @@ In the map preview image stfed uses icons to mark places of special interest:
 
 ![](resources/default-placement.png) - this unit's location is approximate; it will be placed randomly near player's Bloodforge
 
-## Notes on resource types
+## Supported resource types
+
+| Format | Can preview | Can export | Extra export formats | Can import | Extra import formats | Can edit |
+| ------ | ----------- | ---------- | -------------------- | ---------- | -------------------- | -------- |
+| ANI    | ✓           | ✓          | png                  | ✓          |                      |          |
+| BNK    |             | ✓          |                      | ✓          |                      |          |
+| CEL    |             | ✓          |                      | ✓          |                      |          |
+| DAT    |             | n/a        |                      | n/a        |                      |          |
+| FON    | ✓           | ✓          | png                  | ✓          |                      |          |
+| HMP    |             | ✓          | mid                  | ✓          |                      |          |
+| MIF    | ✓           | ✓          |                      | ✓          |                      |          |
+| PAL    | ✓           | ✓          | png                  | ✓          |                      |          |
+| SAV    |             | n/a        |                      | n/a        |                      |          |
+| SCR    |             | n/a        |                      | n/a        |                      |          |
+| SMK    |             | n/a        |                      | n/a        |                      |          |
+| SQB    | ✓           | ✓          | json                 | ✓          | json                 |          |
+| TLB    | ✓           | ✓          |                      | ✓          |                      |          |
+| WAV    | ✓           | ✓          |                      | ✓          |                      |          |
 
 ### ANI
 
@@ -110,3 +127,8 @@ A tileset for a particular region, shared by all [MIF](#mif)s that take place th
 
 Just regular WAVE files, which can be opened in any audio editor. Sound effects in BAM are in 8-bit mono, either 11.5kHz or 22.1kHz. There is also some digitized music in 22.1kHz stereo.
 
+## Acknowledgements
+
+The code for HMP->MIDI conversion was based on Christopher "kode54" Snowhill's [midi_processing](https://github.com/kode54/midi_processing/blob/d7ce6c3e019d22023078a9226870df73a99c6fd4/midi_processor_hmp.cpp) library.
+
+stfed bundles a subset of [Breeze icons](https://invent.kde.org/frameworks/breeze-icons) for OSes that don't have them.

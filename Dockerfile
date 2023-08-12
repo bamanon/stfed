@@ -1,15 +1,18 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 
-RUN DEBIAN_FRONTEND=noninteractive \
-    apt-get update \
+ENV TZ=Etc/UTC
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone \
+    && DEBIAN_FRONTEND=noninteractive apt-get update \
     && apt-get install -y \
         make \
+        gcc \
         python3 \
         python3-venv \
-        python3-pip \
-        python3-pillow \
-        python3-pyaudio \
+        python3-dev \
         libasound2-dev \
+        portaudio19-dev \
         libgl1-mesa-glx \
         libxkbcommon-x11-0 \
         libegl1 \
@@ -20,10 +23,8 @@ RUN DEBIAN_FRONTEND=noninteractive \
         libxcb-keysyms1 \
         libxcb-randr0 \
         libxcb-shape0 \
-    && pip3 install \
-        pyside6 \
-        simpleaudio
-
+        libfontconfig \
+        libgssapi-krb5-2
 
 COPY . /app
 
@@ -31,4 +32,4 @@ WORKDIR /app
 
 RUN make
 
-CMD ["python3", "-m", "stfed"]
+CMD ["make", "run"]

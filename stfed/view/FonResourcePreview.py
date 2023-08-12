@@ -12,10 +12,10 @@ class FonResourcePreview(QtWidgets.QWidget, Ui_FonResourcePreview):
         self.setupUi(self)
         self.__pixmap = None
         self.__subscriptions = []
+        
         self.__subscriptions.append(
-            user_preferences_repo.values().map_subscribe(
-                lambda p: p.double_width_image_preview,
-                self.__on_double_width_preview_pref_changed))
+            user_preferences_repo.values().subscribe(
+                lambda up: self.__on_double_width_preview_pref_changed(up.double_width_image_preview)))
 
 
     def set_model(self, resource: stfed.model.Resource):
@@ -39,6 +39,6 @@ class FonResourcePreview(QtWidgets.QWidget, Ui_FonResourcePreview):
 
     def destroy(self, destroyWindow: bool=True, destroySubWindows: bool=True) -> None:
         for s in self.__subscriptions:
-            s.unsubscribe()
+            s.dispose()
         return super().destroy(destroyWindow, destroySubWindows)
 

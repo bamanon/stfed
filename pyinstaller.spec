@@ -8,7 +8,10 @@ a = Analysis(
     ['stfed/__main__.py'],
     pathex=['.'],
     binaries=[],
-    datas=[('resources', 'resources')],
+    datas=[
+        ('resources', 'resources'),
+        ('LICENSE.txt', '.')
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -37,6 +40,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='resources/icon.ico'
 )
 coll = COLLECT(
     exe,

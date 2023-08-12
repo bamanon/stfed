@@ -1,4 +1,5 @@
 import dataclasses
+import typing
 
 from stfed.model.TerrainType import TerrainType
 
@@ -28,6 +29,6 @@ class TlbTile:
 @dataclasses.dataclass
 class TlbTileLibrary:
     gen_id: int
-    terrains: list[TlbTerrain]
-    tiles: list[TlbTile]
+    terrains: typing.List[TlbTerrain]
+    tiles: typing.List[TlbTile]
 

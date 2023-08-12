@@ -11,11 +11,7 @@ class SqbResourcePreview(QtWidgets.QWidget, Ui_SqbResourcePreview):
         self.entries_table.setHorizontalHeaderLabels(["Id", "Text"])
 
     def set_model(self, resource):
-        collection = stfed.factories.sqb.parse(resource.data())
-        formatted = "\n".join([
-            f"{k}: {v}"
-            for k, v in collection.squibs.items()
-        ])
+        collection = stfed.factories.sqb.parse(resource)
         self.entries_table.setRowCount(0)
         self.entries_table.setRowCount(len(collection.squibs))
         for rowid, (key, value) in enumerate(collection.squibs.items()):

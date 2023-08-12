@@ -1,5 +1,6 @@
-import wave
 import io
+import typing
+import wave
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -13,7 +14,7 @@ class WavResourcePreview(QtWidgets.QWidget, Ui_WavResourcePreview):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.__data: bytes|None = None
+        self.__data: typing.Optional[bytes] = None
         self.play_button.clicked.connect(self.__play_clicked)
 
 

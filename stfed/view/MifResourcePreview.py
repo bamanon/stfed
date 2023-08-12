@@ -27,12 +27,12 @@ class MifResourcePreview(QtWidgets.QWidget, Ui_MifResourcePreview):
         self.units_toggle.clicked.connect(self.__units_toggle_clicked)
         self.misc_toggle.clicked.connect(self.__misc_toggle_clicked)
         self.items_toggle.clicked.connect(self.__items_toggle_clicked)
-        self.__subscriptions.append(
-            user_preferences_repo.values().map_subscribe(
-                lambda p: p.double_width_image_preview,
-                self.__on_double_width_preview_pref_changed))
 
-    
+        self.__subscriptions.append(
+            user_preferences_repo.values().subscribe(
+                lambda up: self.__on_double_width_preview_pref_changed(up.double_width_image_preview)))
+
+
     def set_model(self, mif_resource: stfed.model.Resource):
         pal_rn = mif_resource.resource_name //10 * 10 - 10
         pal = self.__get_palette_or_fallback(pal_rn)
@@ -53,7 +53,6 @@ class MifResourcePreview(QtWidgets.QWidget, Ui_MifResourcePreview):
             if unitlib_entry.base_anim == 0:
                 continue
             # base_anim is walking south, +20 is idle
-            # TODO: refactor away and check sprite by sprite, gnomes and clerics are broken, others might be too
             idle_anim = unitlib_entry.base_anim + 20
             # golems
             if unitlib_entry.base_anim == 500:
@@ -75,30 +74,20 @@ class MifResourcePreview(QtWidgets.QWidget, Ui_MifResourcePreview):
             itemlib[item_type] = stfed.factories.ani.parse(res)
             
 
-        # content = preview_images_repo_instance.get(
-        #     mif_resource.source_file,
-        #     mif_resource.resource_name,
-        #     mif_resource.resource_type)
-        # if content is None:
-        #     content = stfed.factories.mif.export_preview_image(
-        #         mif,
-        #         tlb,
-        #         pal_with_colors,
-        #         unitlib,
-        #         itemlib)
-        #     preview_images_repo_instance.put(
-        #         mif_resource.source_file,
-        #         mif_resource.resource_name,
-        #         mif_resource.resource_type,
-        #         content)
+        content = preview_images_repo_instance.get(
+            mif_resource.source_file,
+            mif_resource.resource_name,
+            stfed.model.ResourceType.MIF)
+        if content is not None:
+            pixmap = QtGui.QPixmap()
+            pixmap.loadFromData(content, 'PNG')
+            self.__pixmap = pixmap
+            adj = 2 if user_preferences_repo.get().double_width_image_preview else 1
+            pixmap = pixmap.scaled(pixmap.width() * adj * self.__zoom, pixmap.height() * self.__zoom)
+            self.map_preview.setPixmap(pixmap)
 
-        # pixmap = QtGui.QPixmap()
-        # pixmap.loadFromData(content, 'PNG')
-        # self.__pixmap = pixmap
 
-        # adj = 2 if user_preferences_repo.get().double_width_image_preview else 1
-        # pixmap = pixmap.scaled(pixmap.width() * adj * self.__zoom, pixmap.height() * self.__zoom)
-        # self.map_preview.setPixmap(pixmap)
+
 
         random_items_img = stfed.factories.mif.export_random_items_preview(mif, pal, itemlib)
         if random_items_img is not None:
@@ -151,18 +140,20 @@ class MifResourcePreview(QtWidgets.QWidget, Ui_MifResourcePreview):
             content = preview_images_repo_instance.get(
                 mif_resource.source_file,
                 mif_resource.resource_name,
-                mif_resource.resource_type)
+                stfed.model.ResourceType.MIF)
             if content is None:
                 content = stfed.factories.mif.export_preview_image(
                     mif,
                     tlb,
                     pal_with_colors,
                     unitlib_dict,
-                    itemlib)
+                    itemlib,
+                    tlb_resource.source_file,
+                    tlb_resource.resource_name)
                 preview_images_repo_instance.put(
                     mif_resource.source_file,
                     mif_resource.resource_name,
-                    mif_resource.resource_type,
+                    stfed.model.ResourceType.MIF,
                     content)
 
             
@@ -174,7 +165,7 @@ class MifResourcePreview(QtWidgets.QWidget, Ui_MifResourcePreview):
             content = preview_images_repo_instance.get(
                 mif_resource.source_file,
                 mif_resource.resource_name,
-                mif_resource.resource_type)
+                stfed.model.ResourceType.MIF)
             pixmap = QtGui.QPixmap()
             pixmap.loadFromData(content, 'PNG')
             self.__pixmap = pixmap
@@ -183,13 +174,13 @@ class MifResourcePreview(QtWidgets.QWidget, Ui_MifResourcePreview):
             pixmap = pixmap.scaled(pixmap.width() * adj * self.__zoom, pixmap.height() * self.__zoom)
             self.map_preview.setPixmap(pixmap)
 
-
-        self.__dialog = stfed.view.BackgroundOperationWindow.BackgroundOperationWindow()
-        self.__dialog.show()
-        self.background_operation = stfed.view.ThreadWrapper.ThreadWrapper(generate_images)
-        self.background_operation.finished.connect(on_images_generated)
-        self.background_operation.on_progress.connect(self.__dialog.set_progress)
-        self.background_operation.start()
+        if content is None:
+            self.__dialog = stfed.view.BackgroundOperationWindow.BackgroundOperationWindow()
+            self.__dialog.show()
+            self.background_operation = stfed.view.ThreadWrapper.ThreadWrapper(generate_images)
+            self.background_operation.finished.connect(on_images_generated)
+            self.background_operation.on_progress.connect(self.__dialog.set_progress)
+            self.background_operation.start()
 
 
     def __toggle(self, header: QtWidgets.QPushButton, contents: QtWidgets.QWidget):
@@ -239,6 +230,6 @@ class MifResourcePreview(QtWidgets.QWidget, Ui_MifResourcePreview):
 
     def destroy(self, destroyWindow: bool=True, destroySubWindows: bool=True) -> None:
         for s in self.__subscriptions:
-            s.unsubscribe()
+            s.dispose()
         return super().destroy(destroyWindow, destroySubWindows)
  

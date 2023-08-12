@@ -68,7 +68,7 @@ def parse_map_info_res(content: bytes):
 
 
 
-def __pick_item_type(s: str) -> stfed.model.ItemType|None:
+def __pick_item_type(s: str) -> typing.Optional[stfed.model.ItemType]:
     item_id = int(s)
     if item_id == 0:
         return None
@@ -192,9 +192,9 @@ def __pick_placements(
 def export_random_items_preview(
         mif: stfed.model.MifMapInfoRes,
         pal: stfed.model.Palette,
-        itemlib: dict[stfed.model.ItemType, stfed.model.AniResource]
+        itemlib:typing.Dict[stfed.model.ItemType, stfed.model.AniResource]
 ):
-    entries: list[stfed.model.MifItemPlacement] = [
+    entries: typing.List[stfed.model.MifItemPlacement] = [
         e
         for p in mif.item_placements
         for e in [p]*p.count
@@ -206,7 +206,7 @@ def export_random_items_preview(
     img = PIL.Image.new('RGBA', (image_width, image_height))
     for i, entry in enumerate(entries):
         ani = itemlib[entry.item_type]
-        stfed.services.blt.blt(ani, i, 0, img, pal, alignment=stfed.services.blt.Alignment.CENTER)
+        stfed.services.blt.blt_in_world_coords(ani, i, 0, img, pal, alignment=stfed.services.blt.Alignment.CENTER)
     bytes_io = io.BytesIO()
     img.save(bytes_io, format='PNG')
     content = bytes_io.getvalue()
@@ -216,8 +216,10 @@ def export_preview_image(
         mif: stfed.model.MifMapInfoRes,
         tlb: stfed.model.TlbTileLibrary,
         pal: stfed.model.Palette,
-        unitlib: dict[str, stfed.model.AniResource],
-        itemlib: dict[stfed.model.ItemType, stfed.model.AniResource]
+        unitlib:typing.Dict[str, stfed.model.AniResource],
+        itemlib:typing.Dict[stfed.model.ItemType, stfed.model.AniResource],
+        tlb_resource_source_file: str,
+        tlb_resource_resource_name: str
 ) -> bytes:
     map_width = stfed.consts.WORLD_WIDTH * stfed.consts.TILE_WIDTH
     map_height = stfed.consts.WORLD_HEIGHT * stfed.consts.TILE_HEIGHT
@@ -240,7 +242,7 @@ def export_preview_image(
                 space = mif.spaces[space_id]
             if space is not None:
                 side = space.owner
-            stfed.services.blt.blt(tile, col, row, img, pal, transparent=False, side=side)
+            stfed.services.blt.blt_in_world_coords(tile, col, row, img, pal, transparent=False, side=side)
 
     all_units = [y for x in [[(u, False)]*u.count for u in mif.units] + [[(u, True)]*u.count for u in mif.rand_units] for y in x]
     default_placements = __find_default_placements(mif, tlb)
@@ -252,12 +254,12 @@ def export_preview_image(
 
         side = unit.owner
         unitlib_entry = unitlib[unit.name]
-        cel = unitlib_entry.cels[0]
-        stfed.services.blt.blt(cel, placement[0], placement[1], img, pal, side=side, alignment=stfed.services.blt.Alignment.BOTTOM_CENTER)
+        cel = unitlib_entry.cels[-1]
+        stfed.services.blt.blt_in_world_coords(cel, placement[0], placement[1], img, pal, side=side, alignment=stfed.services.blt.Alignment.BOTTOM_CENTER)
         # if is_rand_unit:
-        #     stfed.services.blt.blt(randunit_img, placement[0], placement[1], img, pal, side=side, alignment=stfed.services.blt.Alignment.BOTTOM_CENTER)
+        #     stfed.services.blt.blt_in_world_coords(randunit_img, placement[0], placement[1], img, pal, side=side, alignment=stfed.services.blt.Alignment.BOTTOM_CENTER)
         if unit.position == "DEFAULT":
-            stfed.services.blt.blt(default_placement_img, placement[0], placement[1], img, pal, side=side, alignment=stfed.services.blt.Alignment.BOTTOM_RIGHT)
+            stfed.services.blt.blt_in_world_coords(default_placement_img, placement[0], placement[1], img, pal, side=side, alignment=stfed.services.blt.Alignment.BOTTOM_RIGHT)
 
     for space in mif.spaces:
         cel = None
@@ -278,7 +280,7 @@ def export_preview_image(
         if placement == (0, 0):
             placement = space.placements[0]
 
-        stfed.services.blt.blt(cel, placement[0], placement[1], img, pal, side=space.owner, alignment=alignment)
+        stfed.services.blt.blt_in_world_coords(cel, placement[0], placement[1], img, pal, side=space.owner, alignment=alignment)
     random_item_img.close()
     random_item_on_raze_img.close()
     randunit_img.close()
@@ -288,7 +290,7 @@ def export_preview_image(
     for s in mif.spaces:
         if s.hot_spot:
             for p in s.placements:
-                stfed.services.blt.blt(hotspot_img, p[0], p[1], img, pal, alignment=stfed.services.blt.Alignment.CENTER)
+                stfed.services.blt.blt_in_world_coords(hotspot_img, p[0], p[1], img, pal, alignment=stfed.services.blt.Alignment.CENTER)
     hotspot_img.close()
 
     bytes_io = io.BytesIO()

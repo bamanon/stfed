@@ -1,4 +1,6 @@
 import dataclasses
+import typing
+
 
 @dataclasses.dataclass
 class CelHeader():
@@ -18,4 +20,4 @@ class CelResource():
 
 @dataclasses.dataclass
 class AniResource():
-    cels: list[CelResource]
+    cels: typing.List[CelResource]

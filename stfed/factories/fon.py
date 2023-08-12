@@ -1,5 +1,6 @@
 import struct
 import io
+import typing
 
 import PIL.Image
 
@@ -12,7 +13,7 @@ def parse(resource: stfed.model.Resource) -> stfed.model.FontResource:
     font_header_size = struct.calcsize(font_header_format)
     font_header_raw = struct.unpack_from(font_header_format, data)
     font_header = stfed.model.FontHeader(*font_header_raw)
-    chars: list[stfed.model.FontArrayElement] = []
+    chars: typing.List[stfed.model.FontArrayElement] = []
     char_header_format = "=HI"
     char_header_size = struct.calcsize(char_header_format)
     for i in range(resource.num_headers):

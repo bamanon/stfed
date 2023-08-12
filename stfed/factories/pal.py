@@ -2,7 +2,7 @@ import io
 
 import PIL.Image
 
-from stfed.model.Palette import Palette
+from stfed.model import Palette
 
 
 PALETTE_LENGTH = 256

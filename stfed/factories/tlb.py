@@ -1,4 +1,5 @@
 import io
+import math
 import struct
 
 import PIL.Image
@@ -47,7 +48,31 @@ def export_single_tile_image(
     side: stfed.model.Side=stfed.model.Side.SIDE1
 ) -> bytes:
     img = PIL.Image.new( 'RGB', (TILE_WIDTH, TILE_HEIGHT), "black")
-    stfed.services.blt.blt(tile, 0, 0, img, pal, side=side, transparent=False)
+    stfed.services.blt.blt_in_world_coords(tile, 0, 0, img, pal, side=side, transparent=False)
+    bytes_io = io.BytesIO()
+    img.save(bytes_io, format='PNG')
+    content = bytes_io.getvalue()
+    return content
+
+
+def export_spritemap(
+    tlb: stfed.model.TlbTileLibrary,
+    pal: stfed.model.Palette,
+    double_width: bool
+) -> bytes:
+    col_count = math.ceil(math.sqrt(len(tlb.tiles)))
+    row_count = math.ceil(len(tlb.tiles) / col_count)
+    image_width = col_count * TILE_WIDTH
+    image_height = row_count * TILE_HEIGHT
+    img = PIL.Image.new( 'RGBA', (image_width, image_height))
+    for i, cel in enumerate(tlb.tiles):
+        row = i // col_count
+        col = i % col_count
+        x0 = col * TILE_WIDTH
+        y0 = row * TILE_HEIGHT
+        stfed.services.blt.blt_in_img_coords(cel, x0, y0, img, pal, transparent=False)
+    if double_width:
+        img = img.resize((img.width * 2, img.height))
     bytes_io = io.BytesIO()
     img.save(bytes_io, format='PNG')
     content = bytes_io.getvalue()

@@ -1,5 +1,7 @@
-pyside6
-simpleaudio
+miditk-smf
 pillow
 pyaudio
 pyinstaller
+pyside6
+simpleaudio
+reactivex

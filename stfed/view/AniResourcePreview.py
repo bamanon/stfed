@@ -26,13 +26,16 @@ class AniResourcePreview(QtWidgets.QWidget, Ui_AniResourcePreview):
             "Height",
             "Priority"
         ]
+        #self.cels_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
+
         self.cels_table.setColumnCount(len(headers))
         self.cels_table.setHorizontalHeaderLabels(headers)
         self.cels_table.setItemDelegate(ImageDelegate(None))
+
         self.__subscriptions.append(
-            user_preferences_repo.values().map_subscribe(
-                lambda p: p.double_width_image_preview,
-                self.__on_double_width_preview_pref_changed))
+            user_preferences_repo.values().subscribe(
+                lambda up: self.__on_double_width_preview_pref_changed(up.double_width_image_preview)))
+
         self.cels_table.customContextMenuRequested.connect(self.__cels_table_context_menu_requested)
         
 
@@ -45,7 +48,6 @@ class AniResourcePreview(QtWidgets.QWidget, Ui_AniResourcePreview):
         self.cels_table.setColumnWidth(PREVIEW_COLUMN_ID, PREVIEW_DEFAULT_SIZE[0])
         for r in range(len(ani.cels)):
             self.cels_table.setRowHeight(r, PREVIEW_DEFAULT_SIZE[1])
-        
         self.__pixmaps.clear()
 
         #TODO: how to match
@@ -79,7 +81,7 @@ class AniResourcePreview(QtWidgets.QWidget, Ui_AniResourcePreview):
 
     def destroy(self, destroyWindow: bool=True, destroySubWindows: bool=True) -> None:
         for s in self.__subscriptions:
-            s.unsubscribe()
+            s.dispose()
         return super().destroy(destroyWindow, destroySubWindows)
 
 

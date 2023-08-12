@@ -1,4 +1,5 @@
 import dataclasses
+import typing
 
 
 @dataclasses.dataclass
@@ -28,5 +29,5 @@ class FontArrayElement:
 @dataclasses.dataclass
 class FontResource:
     header: FontHeader
-    chars: list[FontArrayElement]
+    chars: typing.List[FontArrayElement]
 

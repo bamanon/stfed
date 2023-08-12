@@ -4,7 +4,7 @@ import os.path
 basedir = os.path.dirname(__file__)
 
 
-STFED_VERSION = "0.1"
+STFED_VERSION = '0.2'
 
 TILE_WIDTH = 20
 TILE_HEIGHT = 38

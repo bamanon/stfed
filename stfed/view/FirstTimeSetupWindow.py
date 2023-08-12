@@ -38,7 +38,9 @@ class FirstTimeSetupWindow(QtWidgets.QWidget, Ui_FirstTimeSetupWindow):
         if filename is None or filename == '':
             return
         text = self.directories_text_edit.toPlainText()
-        if not text.endswith('\n'):
+        if filename in text.split('\n'):
+            return
+        if len(text) > 0 and not text.endswith('\n'):
             text = text + '\n'
         text = text + filename
         self.directories_text_edit.setPlainText(text)
